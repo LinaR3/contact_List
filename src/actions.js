@@ -36,4 +36,49 @@ export const getContacts = async (dispatch, tab) => {
 
 // POST — crear un contacto nuevo
 export const createContact = async (dispatch, tab, contactData) => {
-  t
+  try {
+    const res = await fetch(`${BASE}/agendas/${SLUGS[tab]}/contacts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(contactData),
+    });
+    if (!res.ok) throw new Error("Error creating contact");
+    await getContacts(dispatch, tab);
+    return true;
+  } catch (e) {
+    dispatch({ type: "SET_ERROR", payload: e.message });
+    return false;
+  }
+};
+
+// PUT — editar un contacto existente
+export const updateContact = async (dispatch, tab, id, contactData) => {
+  try {
+    const res = await fetch(`${BASE}/agendas/${SLUGS[tab]}/contacts/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(contactData),
+    });
+    if (!res.ok) throw new Error("Error updating contact");
+    await getContacts(dispatch, tab);
+    return true;
+  } catch (e) {
+    dispatch({ type: "SET_ERROR", payload: e.message });
+    return false;
+  }
+};
+
+// DELETE — borrar un contacto
+export const deleteContact = async (dispatch, tab, id) => {
+  try {
+    const res = await fetch(`${BASE}/agendas/${SLUGS[tab]}/contacts/${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Error deleting contact");
+    await getContacts(dispatch, tab);
+    return true;
+  } catch (e) {
+    dispatch({ type: "SET_ERROR", payload: e.message });
+    return false;
+  }
+};
