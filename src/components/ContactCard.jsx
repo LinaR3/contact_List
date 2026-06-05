@@ -13,38 +13,23 @@ export default function ContactCard({ contact, tab, onEdit, onDelete }) {
   return (
     <div className="contact-card">
 
-      {/* Avatar por tipo */}
-      <div
-        className="contact-card__avatar"
-        style={{ background: avatar.background, color: avatar.color }}
-      >
+      {/* Avatar */}
+      <div className="contact-card__avatar" style={{ background: avatar.background }}>
         <span className="contact-card__emoji">{avatar.emoji}</span>
       </div>
 
-      {/* Info del contacto */}
+      {/* Info */}
       <div className="contact-card__info">
         <p className="contact-card__name">{name || "No name"}</p>
-        {email   && <p className="contact-card__detail">✉ {email}</p>}
-        {phone   && <p className="contact-card__detail">✆ {phone}</p>}
-        {address && <p className="contact-card__detail">⌖ {address}</p>}
+        {address && <p className="contact-card__detail"><span>📍</span> {address}</p>}
+        {phone   && <p className="contact-card__detail"><span>📞</span> {phone}</p>}
+        {email   && <p className="contact-card__detail"><span>✉️</span> {email}</p>}
       </div>
 
-      {/* Botones editar / borrar */}
+      {/* Botones */}
       <div className="contact-card__actions">
-        <button
-          className="btn-icon btn-icon--edit"
-          onClick={() => onEdit(contact)}
-          title="Edit"
-        >
-          ✏️
-        </button>
-        <button
-          className="btn-icon btn-icon--delete"
-          onClick={() => onDelete(contact)}
-          title="Delete"
-        >
-          🗑️
-        </button>
+        <button className="btn-icon btn-icon--edit"   onClick={() => onEdit(contact)}   title="Edit">✏️</button>
+        <button className="btn-icon btn-icon--delete" onClick={() => onDelete(contact)} title="Delete">🗑️</button>
       </div>
 
     </div>
