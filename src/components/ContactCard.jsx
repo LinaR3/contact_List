@@ -42,8 +42,20 @@ export default function ContactCard({ contact, onEdit, onDelete }) {
 
       {/* Botones editar / borrar */}
       <div className="contact-card__actions">
-        <button className="btn-icon btn-icon--edit"   onClick={() => onEdit(contact)}>✎</button>
-        <button className="btn-icon btn-icon--delete" onClick={() => onDelete(contact)}>✕</button>
+        <button
+          className="btn-icon btn-icon--edit"
+          onClick={() => onEdit(contact)}
+          title="Edit"
+        >
+          ✏️
+        </button>
+        <button
+          className="btn-icon btn-icon--delete"
+          onClick={() => onDelete(contact)}
+          title="Delete"
+        >
+          🗑️
+        </button>
       </div>
 
     </div>
