@@ -8,7 +8,7 @@ Desarrollado como parte del Bootcamp de 4Geeks Academy.
 
 ## 🚀 Demo en vivo
 
-> _Agrega aquí tu URL de Vercel después del deploy_
+> https://peoplebase-a08l3swiv-linar3s-projects.vercel.app/
 
 ---
 

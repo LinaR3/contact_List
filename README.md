@@ -8,7 +8,7 @@ Built as part with 4Geeks
 
 ## 🚀 Live Demo
 
-> _AQUI EL VERCEL PARCE
+> https://peoplebase-a08l3swiv-linar3s-projects.vercel.app/
 
 ---
 
