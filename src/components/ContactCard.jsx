@@ -1,35 +1,24 @@
 import React from "react";
 
-// Colores para el avatar según la inicial del nombre
-const COLORS = [
-  { background: "#E6F1FB", color: "#185FA5" },
-  { background: "#E1F5EE", color: "#0F6E56" },
-  { background: "#FAEEDA", color: "#854F0B" },
-  { background: "#FBEAF0", color: "#993556" },
-  { background: "#EEEDFE", color: "#534AB7" },
-];
+const TYPE_AVATAR = {
+  clients:   { emoji: "👤", background: "#E6F1FB", color: "#185FA5" },
+  employees: { emoji: "👷", background: "#E1F5EE", color: "#0F6E56" },
+  providers: { emoji: "🏢", background: "#FAEEDA", color: "#854F0B" },
+};
 
-function getColor(name = "") {
-  return COLORS[name.charCodeAt(0) % COLORS.length];
-}
-
-function getInitials(name = "") {
-  return name
-    .split(" ")
-    .slice(0, 2)
-    .map(w => w[0]?.toUpperCase() || "")
-    .join("");
-}
-
-export default function ContactCard({ contact, onEdit, onDelete }) {
+export default function ContactCard({ contact, tab, onEdit, onDelete }) {
   const { name = "", email = "", phone = "", address = "" } = contact;
+  const avatar = TYPE_AVATAR[tab] || TYPE_AVATAR.clients;
 
   return (
     <div className="contact-card">
 
-      {/* Avatar con iniciales */}
-      <div className="contact-card__avatar" style={getColor(name)}>
-        {getInitials(name) || "?"}
+      {/* Avatar por tipo */}
+      <div
+        className="contact-card__avatar"
+        style={{ background: avatar.background, color: avatar.color }}
+      >
+        <span className="contact-card__emoji">{avatar.emoji}</span>
       </div>
 
       {/* Info del contacto */}

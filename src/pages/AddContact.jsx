@@ -4,31 +4,31 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 import { createContact, updateContact, getContacts } from "../actions";
 
 const TABS = [
-  { key: "clients",   label: "Client" },
-  { key: "employees", label: "Employee" },
-  { key: "providers", label: "Provider" },
+  { key: "clients",   label: "Client",   emoji: "👤" },
+  { key: "employees", label: "Employee", emoji: "👷" },
+  { key: "providers", label: "Provider", emoji: "🏢" },
 ];
 
 const EMPTY_FORM = { name: "", email: "", phone: "", address: "" };
 
 export default function AddContact() {
   const { store, dispatch } = useGlobalReducer();
-  const { contacts, activeTab } = store;
+  const { contacts } = store;
   const navigate = useNavigate();
-  const { tab, id } = useParams(); // si viene de /edit/:tab/:id
+  const { tab, id } = useParams();
 
-  const isEditing = !!id; // true si estamos editando, false si estamos creando
-  const currentTab = tab || activeTab;
+  const isEditing = !!id;
 
-  const [form, setForm]       = useState(EMPTY_FORM);
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState("");
+  // Si viene de editar, usa el tab de la URL. Si es nuevo, empieza en clients
+  const [selectedTab, setSelectedTab] = useState(tab || "clients");
+  const [form, setForm]               = useState(EMPTY_FORM);
+  const [loading, setLoading]         = useState(false);
+  const [error, setError]             = useState("");
 
-  // Si estamos editando, cargar los datos del contacto en el formulario
+  // Si estamos editando, cargar los datos del contacto
   useEffect(() => {
     if (isEditing) {
-      // Buscar el contacto en el store
-      const existing = (contacts[currentTab] || []).find(
+      const existing = (contacts[tab] || []).find(
         c => String(c.id) === String(id)
       );
       if (existing) {
@@ -38,49 +38,32 @@ export default function AddContact() {
           phone:   existing.phone   || "",
           address: existing.address || "",
         });
+        setSelectedTab(tab);
       } else {
-        // Si no está en el store, traerlo de la API
-        getContacts(dispatch, currentTab);
+        getContacts(dispatch, tab);
       }
     }
   }, [id, contacts]);
 
-  // Actualiza el campo que cambió en el formulario
   const handleChange = (e) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // Envía el formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // Validación básica
-    if (!form.name.trim()) {
-      setError("Name is required.");
-      return;
-    }
-    if (!form.email.trim()) {
-      setError("Email is required.");
-      return;
-    }
+    if (!form.name.trim()) { setError("Name is required."); return; }
+    if (!form.email.trim()) { setError("Email is required."); return; }
 
     setLoading(true);
-    let ok;
-
-    if (isEditing) {
-      ok = await updateContact(dispatch, currentTab, id, form);
-    } else {
-      ok = await createContact(dispatch, currentTab, form);
-    }
-
+    const ok = isEditing
+      ? await updateContact(dispatch, tab, id, form)
+      : await createContact(dispatch, selectedTab, form);
     setLoading(false);
 
-    if (ok) {
-      navigate("/"); // regresa a la lista si todo salió bien
-    } else {
-      setError("Something went wrong. Please try again.");
-    }
+    if (ok) navigate("/");
+    else setError("Something went wrong. Please try again.");
   };
 
   return (
@@ -96,13 +79,34 @@ export default function AddContact() {
         </h1>
       </div>
 
-      {/* Formulario */}
       <div className="form-card">
 
-        {/* Indicador de en qué agenda se guarda */}
-        <div className="form-tab-indicator">
-          Saving to: <strong>{currentTab}</strong>
-        </div>
+        {/* Selector de tipo — solo visible al crear, no al editar */}
+        {!isEditing && (
+          <div className="form-type-selector">
+            <p className="form-type-label">Contact type</p>
+            <div className="form-type-buttons">
+              {TABS.map(t => (
+                <button
+                  key={t.key}
+                  className={`form-type-btn ${selectedTab === t.key ? "form-type-btn--active" : ""}`}
+                  onClick={() => setSelectedTab(t.key)}
+                  type="button"
+                >
+                  <span className="form-type-btn__emoji">{t.emoji}</span>
+                  <span>{t.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Si estamos editando, mostrar badge del tipo */}
+        {isEditing && (
+          <div className="form-tab-indicator">
+            Editing: <strong>{tab}</strong>
+          </div>
+        )}
 
         {error && <p className="form-error">{error}</p>}
 
@@ -155,19 +159,11 @@ export default function AddContact() {
         </div>
 
         <div className="form-actions">
-          <button
-            className="btn btn--ghost"
-            onClick={() => navigate("/")}
-            disabled={loading}
-          >
+          <button className="btn btn--ghost" onClick={() => navigate("/")} disabled={loading}>
             Cancel
           </button>
-          <button
-            className="btn btn--primary"
-            onClick={handleSubmit}
-            disabled={loading}
-          >
-            {loading ? "Saving..." : isEditing ? "Save changes" : "Add contact"}
+          <button className="btn btn--primary" onClick={handleSubmit} disabled={loading}>
+            {loading ? "Saving..." : isEditing ? "Save changes" : `Add ${TABS.find(t => t.key === selectedTab)?.label}`}
           </button>
         </div>
 
